@@ -102,20 +102,32 @@ const NewItem = () => {
   };
 
   // Calculate total price
-  const total = formData.items.reduce(
+  const lineTotal = formData.items.reduce(
     (acc, item) => acc + item.quantity * item.pricePerUnit,
     0
   );
 
   // Function to handle quantity change
   const handleQuantityChange = (id, event) => {
-    const updatedItems = formData.items.map(item => {
+    const updatedItems = formData.items.map((item) => {
       if (item.itemId === id) {
         return { ...item, quantity: parseInt(event.target.value, 10) };
       }
       return item;
     });
-    setItems(updatedItems);
+    setFormData({
+      ...formData,
+      items: updatedItems,
+    });
+  };
+
+  // Function to handle item deletion
+  const handleDeleteItem = (id) => {
+    const updatedItems = formData.items.filter((item) => item.itemId !== id);
+    setFormData({
+      ...formData,
+      items: updatedItems,
+    });
   };
 
   return (
@@ -154,21 +166,35 @@ const NewItem = () => {
               </thead>
               <tbody>
                 {formData.items.map((item, index) => (
-                  <tr key={index}>
-                    <td>{index+1}</td>
+                  <tr key={item.itemId}>
+                    <td>{index + 1}</td>
                     <td>{item.brandName}</td>
                     <td>{item.description}</td>
                     <td>{item.mrp}</td>
-                    <td>{item.quantity}</td>
+                    {/* <td>{item.quantity}</td> */}
+                    <td>
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) => handleQuantityChange(item.itemId, e)}
+                        min="1"
+                      />
+                    </td>
                     <td>&#8377; {item.pricePerUnit}</td>
                     <td>&#8377; {item.quantity * item.pricePerUnit}</td>
+                    <td>
+                      <button onClick={() => handleDeleteItem(item.itemId)}>
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
-                <tr>
+                <tr className="total-row">
                   <td colSpan="4" style={{ textAlign: "right" }}>
                     Total:
                   </td>
-                  <td>&#8377; {total.toFixed(2)}</td>
+                  <td>&#8377; {lineTotal.toFixed(2)}</td>
+                  <td></td> {/* Empty cell to align with header columns */}
                 </tr>
               </tbody>
             </table>
