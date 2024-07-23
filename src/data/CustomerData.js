@@ -5,4 +5,8 @@ const CustomerData = [
     { id: 4, name: "Plaza" }
   ];
 
-export default CustomerData;
+  const addCustomer = (newCustomer) => {
+    CustomerData.push(newCustomer);
+  };
+
+export { CustomerData, addCustomer };

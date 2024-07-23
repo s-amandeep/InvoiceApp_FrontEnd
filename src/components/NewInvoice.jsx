@@ -1,35 +1,59 @@
 import React, { useState } from "react";
-import CustomerData from "../data/CustomerData";
+import { CustomerData, addCustomer } from "../data/CustomerData";
 import ShowForm from "./ShowForm";
 import AddButton from "./AddButton";
 import NewItem from "./NewItem";
+import Modal from "./Modal";
+import TableComponent from "./TableComponent";
 
 const NewInvoice = ({ onClose }) => {
   const [formData, setFormData] = useState({
     customerName: "",
     invoiceDate: "",
-    // amount: 0,
-    // items: [], // Array to store invoice items
-    // newItem: {
-    //   // State for a new item
-    //   brandName: "",
-    //   description: "",
-    //   mrp: "",
-    //   quantity: "",
-    //   pricePerPiece: "",
-    //   totalAmount: "",
-    // },
+    items: [], // Array to store invoice items
+    newItem: {
+      // State for a new item
+      brandName: "",
+      description: "",
+      mrp: "",
+      quantity: "",
+      unit: "",
+      pricePerUnit: "",
+      totalAmount: "",
+    },
+    invoiceTotal: 0,
   });
+
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const handleSave = (data) => {
+    console.log(data.newItem);    
+    setFormData((formData) => ({
+      ...formData,
+      items: [...formData.items, data.newItem],
+    }));
+    // Here you can further process the received data, e.g., send to backend, update state, etc.
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    var customer = CustomerData.find((item) => item.id === parseInt(formData.customerId));
+    var customer = CustomerData.find(
+      (item) => item.id === parseInt(formData.customerId)
+    );
     formData.customerName = customer.name;
 
     const combinedData = {
       ...formData,
-      // items: [...formData.items, formData.newItem],
+      items: [...formData.items, formData.newItem],
     };
     console.log("Form data to submit:", combinedData);
 
@@ -41,8 +65,35 @@ const NewInvoice = ({ onClose }) => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleAddNewCustomer = (event) => {
+    // event.preventDefault();
+    // const { name, value } = event.target;
+    const newCustomer = {
+      id: CustomerData.length + 1, // Generate a unique id
+      name: "KK",
+    };
+    addCustomer(newCustomer); // Call addItem function to add new item to the array
+    console.log(CustomerData);
+    // setFormData.customerName(value); // Clear input field after adding item
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleDeleteItem = (id) => {
+    console.log(id, formData.items);
+    // const updatedItems = formData.items.filter((item) => item.itemId !== id);
+    const updatedItems = formData.items.filter((item, index) => index !== id);
+    // console.log(i)
+    setFormData({
+      ...formData,
+      items: updatedItems,
+    });
+  };
+
   const handleCustomerSelectChange = (event) => {
+    event.preventDefault();
     const { value } = event.target;
+
+    // const { value } = event.target;
     if (value === "new") {
       setFormData({ ...formData, customerId: "new", customerName: "" });
     } else {
@@ -87,6 +138,7 @@ const NewInvoice = ({ onClose }) => {
               onChange={handleInputChange}
               required
             />
+            <AddButton onAddNew={handleAddNewCustomer}>New Customer</AddButton>
           </label>
         )}
         <br />
@@ -114,13 +166,26 @@ const NewInvoice = ({ onClose }) => {
           />
         </label>
         <hr /> */}
-        
-        {/* <button onSubmit={handleSubmit}>Confirm </button> */}
+
         {/* <ShowForm props={"Items"}>
           Add New Item
         </ShowForm> */}
-        <NewItem>Add New Item</NewItem>
-        {/* <button onSubmit={handleSubmit}>Add New Item </button> */}
+        {/* <NewItem>Add New Item</NewItem> */}
+        {formData.items.length > 0 && (
+          <TableComponent
+            formData={formData}
+            handleDeleteItem={handleDeleteItem}
+          />
+        )}
+        <button className="open-modal-btn" onClick={openModal}>
+          Add New Item
+        </button>
+        <Modal
+          showModal={showModal}
+          closeModal={closeModal}
+          onSave={handleSave}
+        />
+        <button onSubmit={handleSubmit}>Confirm </button>
       </form>
     </div>
   );

@@ -89,14 +89,16 @@ const Modal = ({ showModal, closeModal, onSave }) => {
     selectedPriceOption.variants[0]
   ); // Initial selection of first variant
   // const [quantity, setQuantity] = useState(1); // Initial selection of first product
+  
   const [formData, setFormData] = useState({
     items: [],
     newItem: {
       // State for a new item
       brandName: "",
-      mrp: "",
       description: "",
+      mrp: "",      
       quantity: 0,
+      unit: "",
       pricePerUnit: 0,
       totalAmount: 0,
     },
