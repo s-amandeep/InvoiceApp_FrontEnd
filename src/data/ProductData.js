@@ -1,10 +1,3 @@
-// const ProductData = [
-//     { id: 1, brandName: "Frooti", mrp: 10, description: "Tetra" },
-//     { id: 2, brandName: "Fizz", mrp: 10, description: "PET" },
-//     { id: 3, brandName: "Swing", mrp: 10, description: "Tetra" },
-//     { id: 4, brandName: "PB Zeera", mrp: 20, description: "PET" }
-//   ];
-
 const ProductData = [
   {
     id: 1,
@@ -84,3 +77,89 @@ const ProductData = [
 ];
 
 export default ProductData;
+
+// const initialProducts = [
+//   {
+//     id: 1,
+//     name: "Product A",
+//     priceOptions: [
+//       {
+//         id: 1,
+//         price: 5.0,
+//         variants: [
+//           { id: 1, size: "Small", color: "Red" },
+//           { id: 2, size: "Medium", color: "Blue" },
+//           { id: 3, size: "Large", color: "Green" },
+//         ],
+//       },
+//       {
+//         id: 2,
+//         price: 7.5,
+//         variants: [
+//           { id: 4, size: "Regular", color: "Black" },
+//           { id: 5, size: "Large", color: "White" },
+//         ],
+//       },
+//       {
+//         id: 3,
+//         price: 10.0,
+//         variants: [
+//           { id: 6, size: "Small", color: "Yellow" },
+//           { id: 7, size: "Medium", color: "Purple" },
+//         ],
+//       },
+//     ],
+//   },
+//   {
+//     id: 2,
+//     name: "Product B",
+//     priceOptions: [
+//       {
+//         id: 4,
+//         price: 6.0,
+//         variants: [
+//           { id: 8, size: "Small", color: "Blue" },
+//           { id: 9, size: "Large", color: "Green" },
+//         ],
+//       },
+//       {
+//         id: 5,
+//         price: 8.0,
+//         variants: [
+//           { id: 10, size: "Regular", color: "Black" },
+//           { id: 11, size: "Large", color: "White" },
+//         ],
+//       },
+//     ],
+//   },
+//   {
+//     id: 3,
+//     name: "Product C",
+//     priceOptions: [
+//       {
+//         id: 6,
+//         price: 4.0,
+//         variants: [
+//           { id: 12, size: "Small", color: "Yellow" },
+//           { id: 13, size: "Medium", color: "Purple" },
+//         ],
+//       },
+//       {
+//         id: 7,
+//         price: 5.0,
+//         variants: [
+//           { id: 14, size: "Regular", color: "Black" },
+//           { id: 15, size: "Large", color: "White" },
+//         ],
+//       },
+//     ],
+//   },
+// ];
+
+
+// const ProductData = [
+//     { id: 1, brandName: "Frooti", mrp: 10, description: "Tetra" },
+//     { id: 2, brandName: "Fizz", mrp: 10, description: "PET" },
+//     { id: 3, brandName: "Swing", mrp: 10, description: "Tetra" },
+//     { id: 4, brandName: "PB Zeera", mrp: 20, description: "PET" }
+//   ];

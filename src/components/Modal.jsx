@@ -1,90 +1,14 @@
 import React, { useState } from "react";
 import "./Modal.css"; // Import CSS for modal styling
 import ProductData from "../data/ProductData";
-
-const initialProducts = [
-  {
-    id: 1,
-    name: "Product A",
-    priceOptions: [
-      {
-        id: 1,
-        price: 5.0,
-        variants: [
-          { id: 1, size: "Small", color: "Red" },
-          { id: 2, size: "Medium", color: "Blue" },
-          { id: 3, size: "Large", color: "Green" },
-        ],
-      },
-      {
-        id: 2,
-        price: 7.5,
-        variants: [
-          { id: 4, size: "Regular", color: "Black" },
-          { id: 5, size: "Large", color: "White" },
-        ],
-      },
-      {
-        id: 3,
-        price: 10.0,
-        variants: [
-          { id: 6, size: "Small", color: "Yellow" },
-          { id: 7, size: "Medium", color: "Purple" },
-        ],
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "Product B",
-    priceOptions: [
-      {
-        id: 4,
-        price: 6.0,
-        variants: [
-          { id: 8, size: "Small", color: "Blue" },
-          { id: 9, size: "Large", color: "Green" },
-        ],
-      },
-      {
-        id: 5,
-        price: 8.0,
-        variants: [
-          { id: 10, size: "Regular", color: "Black" },
-          { id: 11, size: "Large", color: "White" },
-        ],
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "Product C",
-    priceOptions: [
-      {
-        id: 6,
-        price: 4.0,
-        variants: [
-          { id: 12, size: "Small", color: "Yellow" },
-          { id: 13, size: "Medium", color: "Purple" },
-        ],
-      },
-      {
-        id: 7,
-        price: 5.0,
-        variants: [
-          { id: 14, size: "Regular", color: "Black" },
-          { id: 15, size: "Large", color: "White" },
-        ],
-      },
-    ],
-  },
-];
+import ProductUnit from "../data/ProductUnit";
 
 const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange }) => {
-  const [products, setProducts] = useState(initialProducts); // State variable for products
+  const [products, setProducts] = useState(ProductData); // State variable for products
   const [selectedProduct, setSelectedProduct] = useState(products[0]); // Initial selection of first product
   const [selectedPriceOption, setSelectedPriceOption] = useState(selectedProduct.priceOptions[0]); // Initial selection of first price option
   const [selectedVariant, setSelectedVariant] = useState(selectedPriceOption.variants[0]); // Initial selection of first variant
+  const [selectedUnit, setselectedUnit] = useState(ProductUnit[0]); // State variable for unit
 
   // Function to handle product change
   const handleProductChange = (event) => {
@@ -114,6 +38,13 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
     setSelectedVariant(variant);
   };
 
+  // Function to handle unit change
+  const handleUnitChange = (event) => {
+    const unitId = parseInt(event.target.value, 10);
+    const unit = ProductUnit.find((unit) => unit.id === unitId);
+    setselectedUnit(unit);
+  };
+
   function calculateTotal(quantity, pricePerUnit) {
     var calcValue =
       quantity && pricePerUnit
@@ -133,11 +64,18 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
     );
 
     formData.newItem.totalAmount = calcValue;
-    formData.newItem.brandName = selectedProduct.name;
-    formData.newItem.description = selectedVariant.size;
-    formData.newItem.mrp = selectedPriceOption.price;
+    formData.newItem.brandName = selectedProduct.brandName;
+    formData.newItem.description = selectedVariant.description;
+    formData.newItem.mrp = selectedPriceOption.mrp;
+    formData.newItem.unit = selectedUnit.name;  
+    
+    setselectedUnit(ProductUnit[0]);
+    setSelectedProduct(products[0]); 
+    setSelectedPriceOption(selectedProduct.priceOptions[0]); 
+    setSelectedVariant(selectedPriceOption.variants[0]);   
 
     onSave(formData);
+
     closeModal();
   };
 
@@ -158,7 +96,7 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
             >
               {products.map((product) => (
                 <option key={product.id} value={product.id}>
-                  {product.name}
+                  {product.brandName}
                 </option>
               ))}
             </select>
@@ -173,7 +111,7 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
             >
               {selectedProduct.priceOptions.map((option) => (
                 <option key={option.id} value={option.id}>
-                  ${option.price.toFixed(2)}
+                  &#8377; {option.mrp.toFixed(2)}
                 </option>
               ))}
             </select>
@@ -188,11 +126,26 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
             >
               {selectedPriceOption.variants.map((variant) => (
                 <option key={variant.id} value={variant.id}>
-                  {variant.size} - {variant.color}
+                  {variant.description}
                 </option>
               ))}
             </select>
           </div>
+          <br />
+          <div className="unit-select">
+            <label htmlFor="unitSelect">Unit: </label>
+            <select
+              id="unitId"
+              value={selectedUnit.id}
+              onChange={handleUnitChange}
+            >
+              {ProductUnit.map((unit) => (
+                <option key={unit.id} value={unit.id}>
+                  {unit.name}
+                </option>
+              ))}
+            </select>
+          </div>          
           {/* Table to display selected product, price option, variant, and price */}
           <table className="invoice-table">
             <thead>
@@ -200,7 +153,7 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
                 <th>Item No.</th>
                 <th>Description</th>
                 <th>Quantity</th>
-                <th>Price per Piece</th>
+                <th>Price per Unit</th>
                 <th>Total Price</th>
               </tr>
             </thead>
@@ -208,19 +161,22 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
               <tr>
                 <td>1</td>
                 <td>
-                  {selectedProduct.name} -{" "}
-                  {selectedPriceOption.price.toFixed(2)} -{" "}
-                  {selectedVariant.size} - {selectedVariant.color}
+                  {selectedProduct.brandName} -{" "}
+                  {selectedPriceOption.mrp.toFixed(2)} -{" "}
+                  {selectedVariant.description}
+                  {/* {selectedUnit.name} */}
                 </td>
                 <td>
+                  <p>
                   <input
                     type="number"
                     name="quantity"
-                    value={formData.newItem.quantity}
+                    value={formData.newItem.quantity} 
                     onChange={handleNewItemChange}
                     min="1"
                     required
-                  />
+                  /> {selectedUnit.name}
+                  </p> 
                 </td>
                 <td>
                   <input
@@ -233,7 +189,7 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
                 </td>
                 <td>
                   <p>
-                    Total Amount: &#8377;{" "}
+                    &#8377;{" "}
                     {calculateTotal(
                       formData.newItem.pricePerUnit,
                       formData.newItem.quantity

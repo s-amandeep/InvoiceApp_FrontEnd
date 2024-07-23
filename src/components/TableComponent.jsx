@@ -28,9 +28,9 @@ const TableComponent = ({ formData, handleDeleteItem }) => {
               <td>{item.brandName}</td>
               <td>{item.description}</td>
               <td>&#8377; {item.mrp}</td>
-              <td>{item.quantity}</td>
+              <td style={{textAlign: "center"}}>{item.quantity}</td>
               <td>{item.unit}</td>
-              <td>&#8377; {item.pricePerUnit}</td>
+              <td style={{textAlign: "center"}}>&#8377; {item.pricePerUnit}</td>
               <td>&#8377; {item.quantity * item.pricePerUnit}</td>
               <td>
                 <button onClick={() => handleDeleteItem(index)}>Delete</button>
@@ -38,11 +38,11 @@ const TableComponent = ({ formData, handleDeleteItem }) => {
             </tr>
           ))}
           <tr className="total-row">
-            <td colSpan="4" style={{ textAlign: "right" }}>
+            <td colSpan="6" style={{ textAlign: "right" }}>
               Total:
             </td>
-            <td>&#8377; {invoiceTotal.toFixed(2)}</td>
-            <td></td> {/* Empty cell to align with header columns */}
+            <td colSpan="2" style={{ textAlign: "right" }}>&#8377; {invoiceTotal.toFixed(2)}</td>
+            {/* <td></td> Empty cell to align with header columns */}
           </tr>
         </tbody>
       </table>

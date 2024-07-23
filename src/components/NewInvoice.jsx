@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { CustomerData, addCustomer } from "../data/CustomerData";
-import ShowForm from "./ShowForm";
 import AddButton from "./AddButton";
-import NewItem from "./NewItem";
 import Modal from "./Modal";
 import TableComponent from "./TableComponent";
 
@@ -16,9 +14,9 @@ const NewInvoice = ({ onClose }) => {
       brandName: "",
       description: "",
       mrp: "",
-      quantity: "",
+      quantity: 1,
       unit: "",
-      pricePerUnit: "",
+      pricePerUnit: 0,
       totalAmount: "",
     },
     invoiceTotal: 0,
@@ -34,14 +32,22 @@ const NewInvoice = ({ onClose }) => {
     setShowModal(false);
   };
 
+  const invoiceTotalAmount = formData.items.reduce(
+    (acc, item) => acc + item.quantity * item.pricePerUnit,
+    0
+  );
+
   // Function to add items to invoice
   const handleSave = (data) => {
-    console.log(data.newItem);    
+    console.log(data.newItem);
     setFormData((formData) => ({
       ...formData,
       items: [...formData.items, data.newItem],
+
     }));
+
     // Here you can further process the received data, e.g., send to backend, update state, etc.
+    // After adding results in the backend, set all values to initial state
   };
 
   const handleSubmit = (event) => {
@@ -54,11 +60,27 @@ const NewInvoice = ({ onClose }) => {
 
     const combinedData = {
       ...formData,
-      items: [...formData.items, formData.newItem],
+      // items: [...formData.items, formData.newItem],
+      newItem: {
+        // State for a new item
+        brandName: "",
+        description: "",
+        mrp: "",
+        quantity: 1,
+        unit: "",
+        pricePerUnit: 0,
+        totalAmount: "",
+      },
+      invoiceTotal: invoiceTotalAmount,
     };
-    console.log("Form data to submit:", combinedData);
+    if (combinedData.items.length === 0) {
+      alert("Please add items to the invoice!");
+    } else {
+      console.log("Form data to submit:", combinedData);
+      // Here you can further process the received data, e.g., send to backend, update state, etc.
 
-    onClose();
+      onClose();
+    }
   };
 
   const handleInputChange = (event) => {
@@ -71,14 +93,14 @@ const NewInvoice = ({ onClose }) => {
       id: CustomerData.length + 1, // Generate a unique id
       name: "KK",
     };
-    addCustomer(newCustomer); 
+    addCustomer(newCustomer);
     console.log(CustomerData);
   };
 
   const handleDeleteItem = (id) => {
     console.log(id, formData.items);
     // const updatedItems = formData.items.filter((item) => item.itemId !== id);
-    const updatedItems = formData.items.filter((item, index) => index !== id);    
+    const updatedItems = formData.items.filter((item, index) => index !== id);
     setFormData({
       ...formData,
       items: updatedItems,
@@ -163,22 +185,26 @@ const NewInvoice = ({ onClose }) => {
         </label>
         <br />
 
+        <div>
+          <button type="button" className="open-modal-btn" onClick={openModal}>
+            Add New Item
+          </button>
+          <Modal
+            formData={formData}
+            showModal={showModal}
+            closeModal={closeModal}
+            onSave={handleSave}
+            handleNewItemChange={handleNewItemChange}
+          />
+        </div>
+
         {formData.items.length > 0 && (
           <TableComponent
             formData={formData}
             handleDeleteItem={handleDeleteItem}
           />
         )}
-        <button className="open-modal-btn" onClick={openModal}>
-          Add New Item
-        </button>
-        <Modal
-          formData={formData}
-          showModal={showModal}
-          closeModal={closeModal}
-          onSave={handleSave}
-          handleNewItemChange={handleNewItemChange}
-        />
+
         <button onSubmit={handleSubmit}>Confirm </button>
       </form>
     </div>
