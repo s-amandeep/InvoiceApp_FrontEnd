@@ -34,6 +34,7 @@ const NewInvoice = ({ onClose }) => {
     setShowModal(false);
   };
 
+  // Function to add items to invoice
   const handleSave = (data) => {
     console.log(data.newItem);    
     setFormData((formData) => ({
@@ -66,23 +67,18 @@ const NewInvoice = ({ onClose }) => {
   };
 
   const handleAddNewCustomer = (event) => {
-    // event.preventDefault();
-    // const { name, value } = event.target;
     const newCustomer = {
       id: CustomerData.length + 1, // Generate a unique id
       name: "KK",
     };
-    addCustomer(newCustomer); // Call addItem function to add new item to the array
+    addCustomer(newCustomer); 
     console.log(CustomerData);
-    // setFormData.customerName(value); // Clear input field after adding item
-    setFormData({ ...formData, [name]: value });
   };
 
   const handleDeleteItem = (id) => {
     console.log(id, formData.items);
     // const updatedItems = formData.items.filter((item) => item.itemId !== id);
-    const updatedItems = formData.items.filter((item, index) => index !== id);
-    // console.log(i)
+    const updatedItems = formData.items.filter((item, index) => index !== id);    
     setFormData({
       ...formData,
       items: updatedItems,
@@ -93,7 +89,6 @@ const NewInvoice = ({ onClose }) => {
     event.preventDefault();
     const { value } = event.target;
 
-    // const { value } = event.target;
     if (value === "new") {
       setFormData({ ...formData, customerId: "new", customerName: "" });
     } else {
@@ -103,6 +98,19 @@ const NewInvoice = ({ onClose }) => {
         customerName: "",
       });
     }
+  };
+
+  const handleNewItemChange = (event) => {
+    const { name, value } = event.target;
+
+    // Update newItem state
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      newItem: {
+        ...prevFormData.newItem,
+        [name]: value,
+      },
+    }));
   };
 
   return (
@@ -155,22 +163,6 @@ const NewInvoice = ({ onClose }) => {
         </label>
         <br />
 
-        {/* <label className="form-text-color">
-          Invoice Amount:
-          <input
-            type="number"
-            name="amount"
-            value={formData.amount}
-            onChange={handleInputChange}
-            required
-          />
-        </label>
-        <hr /> */}
-
-        {/* <ShowForm props={"Items"}>
-          Add New Item
-        </ShowForm> */}
-        {/* <NewItem>Add New Item</NewItem> */}
         {formData.items.length > 0 && (
           <TableComponent
             formData={formData}
@@ -181,9 +173,11 @@ const NewInvoice = ({ onClose }) => {
           Add New Item
         </button>
         <Modal
+          formData={formData}
           showModal={showModal}
           closeModal={closeModal}
           onSave={handleSave}
+          handleNewItemChange={handleNewItemChange}
         />
         <button onSubmit={handleSubmit}>Confirm </button>
       </form>

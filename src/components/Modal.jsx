@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Modal.css"; // Import CSS for modal styling
+import ProductData from "../data/ProductData";
 
 const initialProducts = [
   {
@@ -79,30 +80,11 @@ const initialProducts = [
   },
 ];
 
-const Modal = ({ showModal, closeModal, onSave }) => {
+const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange }) => {
   const [products, setProducts] = useState(initialProducts); // State variable for products
   const [selectedProduct, setSelectedProduct] = useState(products[0]); // Initial selection of first product
-  const [selectedPriceOption, setSelectedPriceOption] = useState(
-    selectedProduct.priceOptions[0]
-  ); // Initial selection of first price option
-  const [selectedVariant, setSelectedVariant] = useState(
-    selectedPriceOption.variants[0]
-  ); // Initial selection of first variant
-  // const [quantity, setQuantity] = useState(1); // Initial selection of first product
-  
-  const [formData, setFormData] = useState({
-    items: [],
-    newItem: {
-      // State for a new item
-      brandName: "",
-      description: "",
-      mrp: "",      
-      quantity: 0,
-      unit: "",
-      pricePerUnit: 0,
-      totalAmount: 0,
-    },
-  });
+  const [selectedPriceOption, setSelectedPriceOption] = useState(selectedProduct.priceOptions[0]); // Initial selection of first price option
+  const [selectedVariant, setSelectedVariant] = useState(selectedPriceOption.variants[0]); // Initial selection of first variant
 
   // Function to handle product change
   const handleProductChange = (event) => {
@@ -132,19 +114,6 @@ const Modal = ({ showModal, closeModal, onSave }) => {
     setSelectedVariant(variant);
   };
 
-  const handleNewItemChange = (event) => {
-    const { name, value } = event.target;
-
-    // Update newItem state
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      newItem: {
-        ...prevFormData.newItem,
-        [name]: value,
-      },
-    }));
-  };
-
   function calculateTotal(quantity, pricePerUnit) {
     var calcValue =
       quantity && pricePerUnit
@@ -158,38 +127,15 @@ const Modal = ({ showModal, closeModal, onSave }) => {
   const handleAddItem = (event) => {
     event.preventDefault();
 
-    var item = initialProducts.find(
-      (item) => item.id === parseInt(formData.newItem.itemId)
-    );
     var calcValue = calculateTotal(
       formData.newItem.quantity,
       formData.newItem.pricePerUnit
     );
-    // console.log(calcValue, selectedProduct);
 
     formData.newItem.totalAmount = calcValue;
     formData.newItem.brandName = selectedProduct.name;
     formData.newItem.description = selectedVariant.size;
     formData.newItem.mrp = selectedPriceOption.price;
-
-    const combinedData = {
-      ...formData,
-      items: [...formData.items, formData.newItem],
-    };
-    // console.log(combinedData);
-
-    setFormData({
-      // ...formData,
-      items: [...formData.items, formData.newItem], // Add new item to items array
-      newItem: {
-        // Clear newItem state for next item
-        brandName: "",
-        mrp: "",
-        quantity: 0,
-        pricePerUnit: 0,
-        totalAmount: 0,
-      },
-    });
 
     onSave(formData);
     closeModal();
@@ -267,12 +213,12 @@ const Modal = ({ showModal, closeModal, onSave }) => {
                   {selectedVariant.size} - {selectedVariant.color}
                 </td>
                 <td>
-                  {/* <input type="number" value="1" min="1" /> */}
                   <input
                     type="number"
                     name="quantity"
                     value={formData.newItem.quantity}
                     onChange={handleNewItemChange}
+                    min="1"
                     required
                   />
                 </td>
