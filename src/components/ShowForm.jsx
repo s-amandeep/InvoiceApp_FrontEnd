@@ -19,7 +19,7 @@ function ShowForm({props, children}) {
   if (props === "Invoice") {
     componentToRender = <NewInvoice onClose={handleCloseForm} />;
   } else {
-    componentToRender = <NewItem onClose={handleCloseForm} />
+    componentToRender = <NewItem onClose={handleCloseForm} />;
   }
 
   return (

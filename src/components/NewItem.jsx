@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./InvoiceTable.css";
 import ProductData from "../data/ProductData";
+import Modal from "./Modal";
 
 const NewItem = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,36 @@ const NewItem = () => {
       totalAmount: 0,
     },
   });
+
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const handleSave = (data) => {
+    console.log(data.newItem);
+    // setFormData(data); // Receive data from modal
+    setFormData((formData) => ({
+      ...formData,
+      items: [...formData.items, data.newItem],
+      // newItem: {
+      //   ...formData.newItem,
+      //   // [name]: value,
+      //   itemId: value,
+      //   brandName: "",
+      //   description: "",
+      //   mrp: "",
+      // },
+    }));
+    
+    // console.log(formData);
+    // Here you can further process the received data, e.g., send to backend, update state, etc.
+  };
 
   const handleNewItemChange = (event) => {
     const { name, value } = event.target;
@@ -123,7 +154,10 @@ const NewItem = () => {
 
   // Function to handle item deletion
   const handleDeleteItem = (id) => {
-    const updatedItems = formData.items.filter((item) => item.itemId !== id);
+    console.log(id, formData.items)
+    // const updatedItems = formData.items.filter((item) => item.itemId !== id);
+    const updatedItems = formData.items.filter((item, index) => index !== id);
+    // console.log(i)
     setFormData({
       ...formData,
       items: updatedItems,
@@ -132,11 +166,11 @@ const NewItem = () => {
 
   return (
     <div className="form-container">
-      <h2>Add New Item</h2>
+      <h2 className="form-text-color">Invoice</h2>
 
       <form onSubmit={handleSubmit}></form>
       <div>
-        <h3 className="form-text-color">Add Items to Invoice</h3>
+        {/* <h3 className="form-text-color">Invoice</h3> */}
 
         {formData.items.length > 0 && (
           // <div>
@@ -170,20 +204,20 @@ const NewItem = () => {
                     <td>{index + 1}</td>
                     <td>{item.brandName}</td>
                     <td>{item.description}</td>
-                    <td>{item.mrp}</td>
-                    {/* <td>{item.quantity}</td> */}
-                    <td>
+                    <td>&#8377; {item.mrp}</td>
+                    <td>{item.quantity}</td>
+                    {/* <td>
                       <input
                         type="number"
                         value={item.quantity}
                         onChange={(e) => handleQuantityChange(item.itemId, e)}
                         min="1"
                       />
-                    </td>
+                    </td> */}
                     <td>&#8377; {item.pricePerUnit}</td>
                     <td>&#8377; {item.quantity * item.pricePerUnit}</td>
                     <td>
-                      <button onClick={() => handleDeleteItem(item.itemId)}>
+                      <button onClick={() => handleDeleteItem(index)}>
                         Delete
                       </button>
                     </td>
@@ -249,9 +283,14 @@ const NewItem = () => {
           </p>
         </label>
         <br />
-        <button type="button" onClick={handleAddItem}>
+        {/* <button type="button" onClick={handleAddItem}>
           Add Item
+        </button> */}
+        <button className="open-modal-btn" onClick={openModal}>
+          Add New Item
         </button>
+
+        <Modal showModal={showModal} closeModal={closeModal} onSave={handleSave}/>
         <hr />
       </div>
     </div>

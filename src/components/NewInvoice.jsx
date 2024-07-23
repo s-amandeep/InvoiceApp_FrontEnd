@@ -56,7 +56,7 @@ const NewInvoice = ({ onClose }) => {
 
   return (
     <div className="form-container">
-      <h2>Add New Invoice</h2>
+      <h2 className="form-text-color">Invoice</h2>
 
       <form onSubmit={handleSubmit}>
         <label className="form-text-color">
@@ -115,10 +115,12 @@ const NewInvoice = ({ onClose }) => {
         </label>
         <hr /> */}
         
-        <button onSubmit={handleSubmit}>Confirm </button>
-        <ShowForm props={"Items"}>
+        {/* <button onSubmit={handleSubmit}>Confirm </button> */}
+        {/* <ShowForm props={"Items"}>
           Add New Item
-        </ShowForm>
+        </ShowForm> */}
+        <NewItem>Add New Item</NewItem>
+        {/* <button onSubmit={handleSubmit}>Add New Item </button> */}
       </form>
     </div>
   );
