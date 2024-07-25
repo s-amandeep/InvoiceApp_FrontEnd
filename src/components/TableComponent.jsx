@@ -23,7 +23,7 @@ const TableComponent = ({ formData, handleDeleteItem }) => {
         </thead>
         <tbody>
           {formData.items.map((item, index) => (
-            <tr key={index}>
+            <tr key={item.itemId}>
               <td>{index + 1}</td>
               <td>{item.brandName}</td>
               <td>{item.description}</td>
@@ -33,7 +33,7 @@ const TableComponent = ({ formData, handleDeleteItem }) => {
               <td style={{textAlign: "center"}}>&#8377; {item.pricePerUnit}</td>
               <td>&#8377; {item.quantity * item.pricePerUnit}</td>
               <td>
-                <button onClick={() => handleDeleteItem(index)}>Delete</button>
+                <button type="button" onClick={() => handleDeleteItem(index)}>Delete</button>
               </td>
             </tr>
           ))}

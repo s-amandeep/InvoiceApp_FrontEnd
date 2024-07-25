@@ -1,22 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Modal.css"; // Import CSS for modal styling
 import ProductData from "../data/ProductData";
 import ProductUnit from "../data/ProductUnit";
 
-const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange }) => {
+const Modal = ({ showModal, closeModal, onSave }) => {
   const [products, setProducts] = useState(ProductData); // State variable for products
   const [selectedProduct, setSelectedProduct] = useState(products[0]); // Initial selection of first product
-  const [selectedPriceOption, setSelectedPriceOption] = useState(selectedProduct.priceOptions[0]); // Initial selection of first price option
-  const [selectedVariant, setSelectedVariant] = useState(selectedPriceOption.variants[0]); // Initial selection of first variant
+  const [selectedPriceOption, setSelectedPriceOption] = useState(
+    selectedProduct.priceOptions[0]
+  ); // Initial selection of first price option
+  const [selectedVariant, setSelectedVariant] = useState(
+    selectedPriceOption.variants[0]
+  ); // Initial selection of first variant
   const [selectedUnit, setselectedUnit] = useState(ProductUnit[0]); // State variable for unit
+
+  const [itemData, setItemData] = useState({
+    // State for a new item
+    itemId: selectedProduct.id,
+    brandName: selectedProduct.brandName,
+    description: selectedVariant.description,
+    mrp: selectedPriceOption.mrp,
+    quantity: 1,
+    unit: selectedUnit.name,
+    pricePerUnit: 0,
+    totalAmount: 0,
+  });
 
   // Function to handle product change
   const handleProductChange = (event) => {
+    event.preventDefault();
     const productId = parseInt(event.target.value, 10);
     const product = products.find((prod) => prod.id === productId);
     setSelectedProduct(product);
     setSelectedPriceOption(product.priceOptions[0]); // Reset selected price option when product changes
     setSelectedVariant(product.priceOptions[0].variants[0]); // Reset selected variant when product changes
+
+    setItemData((prevItemData) => ({
+      ...prevItemData,
+      brandName: product.brandName,
+      mrp: product.priceOptions[0].mrp,
+      description: product.priceOptions[0].variants[0].description,
+      itemId: product.priceOptions[0].variants[0].id,
+    }));
   };
 
   // Function to handle price option change
@@ -27,6 +52,13 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
     );
     setSelectedPriceOption(priceOption);
     setSelectedVariant(priceOption.variants[0]); // Reset selected variant when price option changes
+
+    setItemData((prevItemData) => ({
+      ...prevItemData,
+      mrp: priceOption.mrp,
+      description: priceOption.variants[0].description,
+      itemId: priceOption.variants[0].id,
+    }));
   };
 
   // Function to handle variant change
@@ -36,6 +68,11 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
       (variant) => variant.id === variantId
     );
     setSelectedVariant(variant);
+    setItemData((prevItemData) => ({
+      ...prevItemData,
+      description: variant.description,
+      itemId: variant.id,
+    }));
   };
 
   // Function to handle unit change
@@ -43,38 +80,47 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
     const unitId = parseInt(event.target.value, 10);
     const unit = ProductUnit.find((unit) => unit.id === unitId);
     setselectedUnit(unit);
+    setItemData((prevItemData) => ({
+      ...prevItemData,
+      unit: unit.name,
+    }));
   };
 
-  function calculateTotal(quantity, pricePerUnit) {
+  const calculateTotal = (quantity, pricePerUnit) => {
     var calcValue =
       quantity && pricePerUnit
         ? (parseFloat(quantity) * parseFloat(pricePerUnit)).toFixed(2)
         : "";
 
     return calcValue;
-  }
+  };
+
+  // Update total whenever quantity or pricePerUnit changes
+  useEffect(() => {
+    const newTotal = calculateTotal(itemData.quantity, itemData.pricePerUnit);
+    
+    setItemData((prevItemData) => ({
+      ...prevItemData,
+      totalAmount: newTotal,
+    }));
+  }, [itemData.quantity, itemData.pricePerUnit]);
+
+  const handleNewItemChange = (event) => {
+    const { name, value } = event.target;
+
+    // Update newItem state
+    setItemData((prevItemData) => ({
+      ...prevItemData,
+      [name]: value,
+    }));  
+  };
 
   // Function to handle add items to invoice
   const handleAddItem = (event) => {
-    event.preventDefault();
+    event.preventDefault();    
 
-    var calcValue = calculateTotal(
-      formData.newItem.quantity,
-      formData.newItem.pricePerUnit
-    );
-
-    formData.newItem.totalAmount = calcValue;
-    formData.newItem.brandName = selectedProduct.brandName;
-    formData.newItem.description = selectedVariant.description;
-    formData.newItem.mrp = selectedPriceOption.mrp;
-    formData.newItem.unit = selectedUnit.name;  
-    
-    setselectedUnit(ProductUnit[0]);
-    setSelectedProduct(products[0]); 
-    setSelectedPriceOption(selectedProduct.priceOptions[0]); 
-    setSelectedVariant(selectedPriceOption.variants[0]);   
-
-    onSave(formData);
+    console.log(itemData);
+    onSave(itemData);    
 
     closeModal();
   };
@@ -92,7 +138,9 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
             <select
               id="productSelect"
               value={selectedProduct.id}
+              name="brandName"
               onChange={handleProductChange}
+              required
             >
               {products.map((product) => (
                 <option key={product.id} value={product.id}>
@@ -145,12 +193,12 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
                 </option>
               ))}
             </select>
-          </div>          
+          </div>
           {/* Table to display selected product, price option, variant, and price */}
           <table className="invoice-table">
             <thead>
               <tr>
-                <th>Item No.</th>
+                <th>Item Id</th>
                 <th>Description</th>
                 <th>Quantity</th>
                 <th>Price per Unit</th>
@@ -159,7 +207,7 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
             </thead>
             <tbody>
               <tr>
-                <td>1</td>
+                <td>{selectedVariant.id}</td>
                 <td>
                   {selectedProduct.brandName} -{" "}
                   {selectedPriceOption.mrp.toFixed(2)} -{" "}
@@ -168,21 +216,22 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
                 </td>
                 <td>
                   <p>
-                  <input
-                    type="number"
-                    name="quantity"
-                    value={formData.newItem.quantity} 
-                    onChange={handleNewItemChange}
-                    min="1"
-                    required
-                  /> {selectedUnit.name}
-                  </p> 
+                    <input
+                      type="number"
+                      name="quantity"
+                      value={itemData.quantity}
+                      onChange={handleNewItemChange}
+                      min="1"
+                      required
+                    />{" "}
+                    {selectedUnit.name}
+                  </p>
                 </td>
                 <td>
                   <input
                     type="number"
                     name="pricePerUnit"
-                    value={formData.newItem.pricePerUnit}
+                    value={itemData.pricePerUnit}
                     onChange={handleNewItemChange}
                     required
                   />
@@ -190,10 +239,7 @@ const Modal = ({ formData, showModal, closeModal, onSave, handleNewItemChange })
                 <td>
                   <p>
                     &#8377;{" "}
-                    {calculateTotal(
-                      formData.newItem.pricePerUnit,
-                      formData.newItem.quantity
-                    )}
+                    {calculateTotal(itemData.pricePerUnit, itemData.quantity)}
                   </p>
                 </td>
               </tr>

@@ -16,11 +16,12 @@ function ShowForm({props, children}) {
 
   let componentToRender;
 
-  if (props === "Invoice") {
-    componentToRender = <NewInvoice onClose={handleCloseForm} />;
-  } else {
-    componentToRender = <NewItem onClose={handleCloseForm} />;
-  }
+  componentToRender = <NewInvoice onClose={handleCloseForm} />;
+  // if (props === "Invoice") {
+  //   componentToRender = <NewInvoice onClose={handleCloseForm} />;
+  // } else {
+  //   componentToRender = <NewItem onClose={handleCloseForm} />;
+  // }
 
   return (
     <div>

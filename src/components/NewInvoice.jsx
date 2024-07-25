@@ -3,14 +3,18 @@ import { CustomerData, addCustomer } from "../data/CustomerData";
 import AddButton from "./AddButton";
 import Modal from "./Modal";
 import TableComponent from "./TableComponent";
+import { jsPDF } from 'jspdf';
+import generateInvoicePDF from "./generateInvoicePDF";
 
 const NewInvoice = ({ onClose }) => {
   const [formData, setFormData] = useState({
+    customerId: "",
     customerName: "",
     invoiceDate: "",
     items: [], // Array to store invoice items
     newItem: {
       // State for a new item
+      itemId: "",
       brandName: "",
       description: "",
       mrp: "",
@@ -23,6 +27,7 @@ const NewInvoice = ({ onClose }) => {
   });
 
   const [showModal, setShowModal] = useState(false);
+  const [showComponent, setShowComponent] = useState(false);
 
   const openModal = () => {
     setShowModal(true);
@@ -32,22 +37,32 @@ const NewInvoice = ({ onClose }) => {
     setShowModal(false);
   };
 
-  const invoiceTotalAmount = formData.items.reduce(
-    (acc, item) => acc + item.quantity * item.pricePerUnit,
-    0
-  );
+  const handleClick = () => {
+    setShowComponent(true);
+  };
+
+  // const invoiceTotalAmount = formData.items.reduce(
+  //   (acc, item) => acc + item.quantity * item.pricePerUnit,
+  //   0
+  // );
+  const invoiceTotalAmount = 0;
 
   // Function to add items to invoice
-  const handleSave = (data) => {
-    console.log(data.newItem);
+  const onSave = (data) => {
+    console.log("NI -- ", data);
+
+    const updatedItems = [...formData.items];
+    updatedItems.push(data);
+
     setFormData((formData) => ({
       ...formData,
-      items: [...formData.items, data.newItem],
-
+      items: updatedItems,
+      invoiceTotal: invoiceTotalAmount,
     }));
 
     // Here you can further process the received data, e.g., send to backend, update state, etc.
     // After adding results in the backend, set all values to initial state
+    // console.log(formData, updatedItems);
   };
 
   const handleSubmit = (event) => {
@@ -63,6 +78,7 @@ const NewInvoice = ({ onClose }) => {
       // items: [...formData.items, formData.newItem],
       newItem: {
         // State for a new item
+        // itemId: "",
         brandName: "",
         description: "",
         mrp: "",
@@ -107,6 +123,8 @@ const NewInvoice = ({ onClose }) => {
     });
   };
 
+  const companyName = "ZTL";
+
   const handleCustomerSelectChange = (event) => {
     event.preventDefault();
     const { value } = event.target;
@@ -114,10 +132,12 @@ const NewInvoice = ({ onClose }) => {
     if (value === "new") {
       setFormData({ ...formData, customerId: "new", customerName: "" });
     } else {
+      const customer = CustomerData.find((c) => c.id === parseInt(value));
       setFormData({
         ...formData,
         customerId: value,
-        customerName: "",
+        customerName: customer.name,
+        // customerName: "",
       });
     }
   };
@@ -134,6 +154,12 @@ const NewInvoice = ({ onClose }) => {
       },
     }));
   };
+
+  const getFinalInvoice = (event) => {
+
+    console.log(formData);
+    generateInvoicePDF(formData, companyName);
+  }
 
   return (
     <div className="form-container">
@@ -168,7 +194,7 @@ const NewInvoice = ({ onClose }) => {
               onChange={handleInputChange}
               required
             />
-            <AddButton onAddNew={handleAddNewCustomer}>New Customer</AddButton>
+            {/* <AddButton onAddNew={handleAddNewCustomer}>New Customer</AddButton> */}
           </label>
         )}
         <br />
@@ -179,6 +205,7 @@ const NewInvoice = ({ onClose }) => {
             type="date"
             name="invoiceDate"
             value={formData.invoiceDate}
+            // value={Date.now()}
             onChange={handleInputChange}
             required
           />
@@ -190,11 +217,11 @@ const NewInvoice = ({ onClose }) => {
             Add New Item
           </button>
           <Modal
-            formData={formData}
+            // formData={formData}
             showModal={showModal}
             closeModal={closeModal}
-            onSave={handleSave}
-            handleNewItemChange={handleNewItemChange}
+            onSave={onSave}
+            // handleNewItemChange={handleNewItemChange}
           />
         </div>
 
@@ -205,7 +232,21 @@ const NewInvoice = ({ onClose }) => {
           />
         )}
 
-        <button onSubmit={handleSubmit}>Confirm </button>
+        {/* <button onSubmit={handleSubmit}>Confirm </button> */}
+
+        {/* <button type="button" onClick={handleClick}>
+          Render Component
+        </button>
+        {showComponent && (
+          <InvoicePreview
+            formData={formData}
+            companyName={companyName}
+            handleDeleteItem={handleDeleteItem}
+            onConfirmInvoice={handleSubmit}
+          />
+        )} */}
+        <hr />
+        <button type="button" onClick={getFinalInvoice}>Generate PDF and Share via WhatsApp</button>
       </form>
     </div>
   );

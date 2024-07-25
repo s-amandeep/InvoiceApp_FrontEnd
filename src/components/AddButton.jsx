@@ -14,7 +14,7 @@ const AddButton = ({ children, onAddNew }) => {
   return (
     <>
       {!showForm && (
-        <button className="add-button" onClick={handleAddNew}>
+        <button type="button" className="add-button" onClick={handleAddNew}>
           {children}
         </button>
       )}
