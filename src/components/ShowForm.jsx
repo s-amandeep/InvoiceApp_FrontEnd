@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import AddButton from "./AddButton";
-import NewInvoice from "./NewInvoice";
-import NewItem from "./NewItem";
+import NewInvoice from "./Invoice/NewInvoice";
+import NewProduct from "./Product/newProduct";
+import ViewProducts from "./Product/ViewProducts";
+import NewCustomer from "./Customer/NewCustomer";
 
 function ShowForm({props, children}) {
   const [showForm, setShowForm] = useState(false);
@@ -16,12 +18,18 @@ function ShowForm({props, children}) {
 
   let componentToRender;
 
-  componentToRender = <NewInvoice onClose={handleCloseForm} />;
-  // if (props === "Invoice") {
-  //   componentToRender = <NewInvoice onClose={handleCloseForm} />;
-  // } else {
-  //   componentToRender = <NewItem onClose={handleCloseForm} />;
-  // }
+  // componentToRender = <NewInvoice onClose={handleCloseForm} />;
+  if (props === "Invoice") {
+    componentToRender = <NewInvoice onClose={handleCloseForm} />;
+  } else if (props === "Product") {
+    componentToRender = <NewProduct onClose={handleCloseForm} />;
+  } else if (props === "ViewProducts") {
+    componentToRender = <ViewProducts onClose={handleCloseForm} />;
+  } else if (props === "Customer") {
+    componentToRender = <NewCustomer onClose={handleCloseForm} />;
+  } else {
+    componentToRender = <div></div>;
+  }
 
   return (
     <div>

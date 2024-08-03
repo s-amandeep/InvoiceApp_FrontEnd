@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Modal.css"; // Import CSS for modal styling
-import ProductData from "../data/ProductData";
-import ProductUnit from "../data/ProductUnit";
+import ProductData from "../../data/ProductData";
+import ProductUnit from "../../data/ProductUnit";
 
 const Modal = ({ showModal, closeModal, onSave }) => {
   const [products, setProducts] = useState(ProductData); // State variable for products
