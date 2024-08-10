@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import AddButton from "./AddButton";
 import NewInvoice from "./Invoice/NewInvoice";
 import NewProduct from "./Product/newProduct";
-import ViewProducts from "./Product/ViewProducts";
+// import ViewProducts from "./Product/GetAllProducts";
 import NewCustomer from "./Customer/NewCustomer";
 
 function ShowForm({props, children}) {
@@ -23,8 +23,8 @@ function ShowForm({props, children}) {
     componentToRender = <NewInvoice onClose={handleCloseForm} />;
   } else if (props === "Product") {
     componentToRender = <NewProduct onClose={handleCloseForm} />;
-  } else if (props === "ViewProducts") {
-    componentToRender = <ViewProducts onClose={handleCloseForm} />;
+  // } else if (props === "ViewProducts") {
+  //   componentToRender = <ViewProducts onClose={handleCloseForm} />;
   } else if (props === "Customer") {
     componentToRender = <NewCustomer onClose={handleCloseForm} />;
   } else {

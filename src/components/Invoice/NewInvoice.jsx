@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import GetAllCustomers from "../Customer/GetAllCustomers";
+import GetAllProducts from "../Product/GetAllProducts"
 import Modal from "./Modal";
 import TableComponent from "./TableComponent";
 import generateInvoicePDF from "./generateInvoicePDF";
@@ -36,6 +37,8 @@ const NewInvoice = ({ onClose }) => {
   };
 
   const CustomerData = GetAllCustomers();
+  const ProductData = GetAllProducts();
+  console.log(ProductData);
 
   const invoiceTotalAmount = 0;
 

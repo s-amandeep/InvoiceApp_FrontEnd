@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./Modal.css"; // Import CSS for modal styling
+// import GetAllCustomers from "../Customer/GetAllCustomers";
+import GetAllProducts from "../Product/GetAllProducts"
 import ProductData from "../../data/ProductData";
 import ProductUnit from "../../data/ProductUnit";
 
 const Modal = ({ showModal, closeModal, onSave }) => {
+  // const ProductData = GetAllProducts();
+  // console.log(ProductData);
   const [products, setProducts] = useState(ProductData); // State variable for products
   const [selectedProduct, setSelectedProduct] = useState(products[0]); // Initial selection of first product
   const [selectedPriceOption, setSelectedPriceOption] = useState(

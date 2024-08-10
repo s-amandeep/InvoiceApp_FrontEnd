@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { fetchCustomers } from "../../apis/api_customers";
+import { fetchData } from "../../apis/api_data";
 
 const GetAllCustomers = () => {
   const [customerData, setCustomerData] = useState([]);
   useEffect(() => {
     const loadCustomers = async () => {
       try {
-        const data = await fetchCustomers();
+        const data = await fetchData(`customers`);
         setCustomerData(data);
       } catch (error) {
         console.error("Failed to load customers", error);

@@ -11,9 +11,7 @@ function App() {
         <ShowForm props={"Invoice"}>Add New Invoice</ShowForm>
         <br />
         <ShowForm props={"Product"}>Add New Product</ShowForm>
-        <br />
-        <ShowForm props={"ViewProducts"}>View All Products</ShowForm>
-        <br />
+        <br />        
         <ShowForm props={"Customer"}>Add New Customer</ShowForm>
       </main>
     </div>

@@ -1,150 +1,149 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./ProductTable.css";
 
 const NewProduct = () => {
-  // State for the form fields
-  const [brandName, setBrandName] = useState('');
-  const [priceOptions, setPriceOptions] = useState([{ price: '', variants: [{ description: '' }] }]);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [products, setProducts] = useState([]);  
+  const [newProduct, setNewProduct] = useState({
+    brandName: "",
+    price: "",
+    description: "",
+    stock: "",
+    unitOfMeasurement: "",
+  });  
 
-  // Handle form submission
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  useEffect(() => {
+    fetchProducts();    
+  }, []);
 
-    // Validate input
-    if (!brandName || priceOptions.some(option => !option.price || option.variants.some(variant => !variant.description))) {
-      setError('All fields are required.');
-      return;
-    }
-
-    setError('');
-    setSuccess('');
-
-    // Data to be sent to the backend
-    const productData = {
-      brandName,
-      priceOptions,
-    };
-
-    try {
-      // Send data to the backend
-      const response = await fetch('http://localhost:8080/api/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(productData),
+  const fetchProducts = () => {
+    axios
+      .get("http://localhost:8080/api/products")
+      .then((response) => {
+        setProducts(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the products!", error);
       });
+  };
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok.');
-      }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNewProduct({ ...newProduct, [name]: value });
+  };
 
-      // Clear the form and show success message
-      setBrandName('');
-      setPriceOptions([{ price: '', variants: [{ description: '' }] }]);
-      setSuccess('Product added successfully!');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      axios.post("http://localhost:8080/api/products", newProduct);
+      fetchProducts();
+      setNewProduct({
+        brandName: "",
+        price: "",
+        description: "",
+        stock: "",
+        unitOfMeasurement: "",
+      });      
     } catch (error) {
-      setError(`Error: ${error.message}`);
+      console.error("There was an error adding the product!", error);
     }
   };
 
-  // Handle brand name change
-  const handleBrandNameChange = (e) => {
-    setBrandName(e.target.value);
-  };
-
-  // Handle price option change
-  const handlePriceOptionChange = (index, e) => {
-    const { name, value } = e.target;
-    const updatedOptions = [...priceOptions];
-    updatedOptions[index] = { ...updatedOptions[index], [name]: value };
-    setPriceOptions(updatedOptions);
-  };
-
-  // Handle variant description change
-  const handleVariantChange = (priceOptionIndex, variantIndex, e) => {
-    const { value } = e.target;
-    const updatedOptions = [...priceOptions];
-    updatedOptions[priceOptionIndex].variants[variantIndex].description = value;
-    setPriceOptions(updatedOptions);
-  };
-
-  // Add a new price option
-  const addPriceOption = () => {
-    setPriceOptions([...priceOptions, { price: '', variants: [{ description: '' }] }]);
-  };
-
-  // Remove a price option
-  const removePriceOption = (index) => {
-    const updatedOptions = priceOptions.filter((_, i) => i !== index);
-    setPriceOptions(updatedOptions);
-  };
-
-  // Add a new variant to a price option
-  const addVariant = (priceOptionIndex) => {
-    const updatedOptions = [...priceOptions];
-    updatedOptions[priceOptionIndex].variants.push({ description: '' });
-    setPriceOptions(updatedOptions);
-  };
-
-  // Remove a variant from a price option
-  const removeVariant = (priceOptionIndex, variantIndex) => {
-    const updatedOptions = [...priceOptions];
-    updatedOptions[priceOptionIndex].variants = updatedOptions[priceOptionIndex].variants.filter((_, i) => i !== variantIndex);
-    setPriceOptions(updatedOptions);
+  const handleDelete = (variantId) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      axios
+        .delete(`http://localhost:8080/api/products/${variantId}`)
+        .then(() => {
+          fetchProducts(); // Refresh the product list after deletion
+        })
+        .catch((error) => {
+          console.error("There was an error deleting the product!", error);
+        });
+    }
   };
 
   return (
-    <div className="form-container">
-      <h2 className="form-text-color">Add New Product</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Brand Name:
-            <input
-              type="text"
-              value={brandName}
-              onChange={handleBrandNameChange}
-            />
-          </label>
-        </div>
-        {priceOptions.map((option, priceIndex) => (
-          <div key={priceIndex}>
-            <h3>Price Option {priceIndex + 1}</h3>
-            <div>
-              <label>
-                Price:
-                <input
-                  type="text"
-                  name="price"
-                  value={option.price}
-                  onChange={(e) => handlePriceOptionChange(priceIndex, e)}
-                />
-              </label>
-            </div>
-            {option.variants.map((variant, variantIndex) => (
-              <div key={variantIndex}>
-                <label>
-                  Variant Description:
-                  <input
-                    type="text"
-                    value={variant.description}
-                    onChange={(e) => handleVariantChange(priceIndex, variantIndex, e)}
-                  />
-                </label>
-                <button type="button" onClick={() => removeVariant(priceIndex, variantIndex)}>Remove Variant</button>
-              </div>
-            ))}
-            <button type="button" onClick={() => addVariant(priceIndex)}>Add Variant</button>
-            <button type="button" onClick={() => removePriceOption(priceIndex)}>Remove Price Option</button>
-          </div>
-        ))}
-        <button type="button" onClick={addPriceOption}>Add Price Option</button>
+    <div className="product-table-container">
+      <h1>Product List</h1>
+      <form onSubmit={handleSubmit} className="product-form">
+        <input
+          type="text"
+          name="brandName"
+          value={newProduct.brandName}
+          onChange={handleChange}
+          placeholder="Brand Name"
+          required
+        />
+        <input
+          type="number"
+          name="price"
+          step="0.01" // Allow up to 2 decimal places
+          value={newProduct.price}
+          onChange={handleChange}
+          placeholder="Price"
+          required
+        />
+        <input
+          type="text"
+          name="description"
+          value={newProduct.description}
+          onChange={handleChange}
+          placeholder="Description"
+          required
+        />
+        <input
+          type="number"
+          name="stock"
+          step="0.01" // Allow up to 2 decimal places
+          placeholder="Stock"
+          value={newProduct.stock}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="unitOfMeasurement"
+          placeholder="Unit"
+          value={newProduct.unitOfMeasurement}
+          onChange={handleChange}
+          required
+        />        
         <button type="submit">Add Product</button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
+      <table className="product-table">
+        <thead>
+          <tr>
+            <th>Variant ID</th>
+            <th>Brand Name</th>            
+            <th>Description</th>
+            <th>MRP</th>
+            <th>Stock</th>
+            <th>Unit</th>
+            <th>Actions</th> {/* Add Actions column */}
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product) => (
+            <tr key={product.variantId}>
+              <td>{product.variantId}</td>
+              <td>{product.brandName}</td>
+              <td>{product.description}</td>
+              <td>&#8377;{product.price}</td>                          
+              <td>{product.stock}</td>
+              <td>{product.unitOfMeasurement}</td>
+              <td>
+                <button
+                  className="delete-button"
+                  onClick={() => handleDelete(product.variantId)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
