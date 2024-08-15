@@ -65,7 +65,7 @@ const NewProduct = () => {
 
   return (
     <div className="product-table-container">
-      <h1>Product List</h1>
+      <h1>Add New Product</h1>
       <form onSubmit={handleSubmit} className="product-form">
         <input
           type="text"
@@ -111,6 +111,7 @@ const NewProduct = () => {
         />        
         <button type="submit">Add Product</button>
       </form>
+      <h2>Product List</h2>
       <table className="product-table">
         <thead>
           <tr>

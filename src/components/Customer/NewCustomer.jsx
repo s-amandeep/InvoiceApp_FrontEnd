@@ -1,52 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from "axios";
+import GetAllCustomers from './GetAllCustomers';
 
 const NewCustomer = () => {
   // State for form fields
-  const [customerName, setCustomerName] = useState('');
-  const [address, setAddress] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [customers, setCustomers] = useState([]);  
+  const [newCustomer, setNewCustomer] = useState({
+    name: "",
+    address: "",
+    mobile: ""
+  });  
+
+  useEffect(() => {
+    fetchCustomers();    
+  }, []);
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const fetchCustomers = () => {
+    axios
+      .get("http://localhost:8080/api/customers")
+      .then((response) => {
+        setCustomers(response.data);
+        // console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the customers!", error);
+      });
+  };
 
   // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // Validate input
-    if (!customerName || !address || !phoneNumber) {
-      setError('All fields are required.');
-      return;
-    }
     
-    setError('');
-    setSuccess('');
-
-    // Data to be sent to the backend
-    const customerData = {
-      name: customerName,
-      address: address,
-      mobile: phoneNumber,
-    };
+    // setError('');
+    // setSuccess('');  
 
     try {
-      // Send data to the backend
-      const response = await fetch('http://localhost:8080/api/customers', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(customerData),
-      });
+        axios.post("http://localhost:8080/api/customers", newCustomer);        
+        setNewCustomer({
+          name: "",
+          address: "",
+          mobile: "",
+        });          
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok.');
-      }
-
-      // Clear the form and show success message
-      setCustomerName('');
-      setAddress('');
-      setPhoneNumber('');
       setSuccess('Customer added successfully!');
+      fetchCustomers();
     } catch (error) {
       setError(`Error: ${error.message}`);
     }
@@ -54,12 +54,18 @@ const NewCustomer = () => {
 
   // Handle phone number input change
   const handlePhoneNumberChange = (e) => {
-    const value = e.target.value;
-
+    const {name, value} = e.target;
+    
     // Allow only digits and limit to 10 characters
     if (/^\d{0,10}$/.test(value)) {
-      setPhoneNumber(value);
+      setNewCustomer({ ...newCustomer, [name]: value });
+      // setPhoneNumber(value);
     }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNewCustomer({ ...newCustomer, [name]: value });
   };
 
   return (
@@ -71,8 +77,11 @@ const NewCustomer = () => {
             Customer Name:             
             <input
               type="text"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
+              name="name"
+              value={newCustomer.name}
+              onChange={handleChange}   
+              placeholder="Customer Name"           
+              required
             />
           </label>
         </div>
@@ -81,8 +90,11 @@ const NewCustomer = () => {
             Address:
             <input
               type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              name="address"
+              value={newCustomer.address}
+              onChange={handleChange}
+              placeholder="Customer Address"  
+              required
             />
           </label>
         </div>
@@ -90,10 +102,13 @@ const NewCustomer = () => {
           <label>
             Phone Number:
             <input
+              name="mobile"
               type="text"
-              value={phoneNumber}
+              value={newCustomer.mobile}
               onChange={handlePhoneNumberChange}
+              placeholder="Phone Number"  
               maxLength={10} // HTML attribute to limit input length
+              required
             />
           </label>
         </div>
@@ -101,6 +116,37 @@ const NewCustomer = () => {
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {success && <p style={{ color: 'green' }}>{success}</p>}
+
+      <h2>Customer List</h2>
+      <table className="product-table">
+        <thead>
+          <tr>
+            <th>Customer ID</th>
+            <th>Customer Name</th>            
+            <th>Address</th>
+            <th>Phone Number</th>
+            {/* <th>Actions</th>  */}
+          </tr>
+        </thead>
+        <tbody>
+          {customers.map((customer) => (
+            <tr key={customer.id}>
+              <td>{customer.id}</td>
+              <td>{customer.name}</td>
+              <td>{customer.address}</td>                       
+              <td>{customer.mobile}</td>
+              {/* <td>
+                <button
+                  className="delete-button"
+                  onClick={() => handleDelete(customer.id)}
+                >
+                  Delete
+                </button>
+              </td> */}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

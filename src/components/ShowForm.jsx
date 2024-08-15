@@ -4,6 +4,7 @@ import NewInvoice from "./Invoice/NewInvoice";
 import NewProduct from "./Product/newProduct";
 // import ViewProducts from "./Product/GetAllProducts";
 import NewCustomer from "./Customer/NewCustomer";
+import Invoice from "./InvoiceNew/Invoice";
 
 function ShowForm({props, children}) {
   const [showForm, setShowForm] = useState(false);
@@ -20,7 +21,7 @@ function ShowForm({props, children}) {
 
   // componentToRender = <NewInvoice onClose={handleCloseForm} />;
   if (props === "Invoice") {
-    componentToRender = <NewInvoice onClose={handleCloseForm} />;
+    componentToRender = <Invoice onClose={handleCloseForm} />;
   } else if (props === "Product") {
     componentToRender = <NewProduct onClose={handleCloseForm} />;
   // } else if (props === "ViewProducts") {

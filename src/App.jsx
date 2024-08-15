@@ -8,11 +8,11 @@ function App() {
     <div className='App'>
       <Header />
       <main className='core-concepts'>        
-        <ShowForm props={"Invoice"}>Add New Invoice</ShowForm>
+        <ShowForm props={"Invoice"}>Invoices</ShowForm>
         <br />
-        <ShowForm props={"Product"}>Add New Product</ShowForm>
+        <ShowForm props={"Product"}>Products</ShowForm>
         <br />        
-        <ShowForm props={"Customer"}>Add New Customer</ShowForm>
+        <ShowForm props={"Customer"}>Customers</ShowForm>
       </main>
     </div>
   );
