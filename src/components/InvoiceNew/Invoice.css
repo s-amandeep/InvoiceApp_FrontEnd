@@ -18,15 +18,27 @@
     color: #000000; 
 }
 
+.form-group-date {
+    margin-bottom: 15px;   
+    width: 100%;
+    color: #000000; 
+}
+
 .form-group label {
     display: block;
     font-weight: bold;
     margin-bottom: 5px;
 }
 
-.form-group input,
+.form-group input {
+    width: 25%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
 .form-group select {
-    width: 100%;
+    width: 50%;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -67,6 +79,12 @@ button {
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(n, 1fr);
+    gap: 10px;
 }
 
 button:hover {
@@ -131,4 +149,62 @@ button:hover {
 
 .modal-content button:hover {
     background-color: #0056b3;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    color: #000000;
+    background-color: #f2f2c2;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.view-delete {
+    display: flex;
+    justify-content: center;  
+    padding: '10px 20px',
+}
+
+.pagination button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.pagination button:hover {
+    background-color: #0056b3;
+}
+
+.pagination button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.pagination button.active {
+    background-color: #0056b3;
+    font-weight: bold;
 }
