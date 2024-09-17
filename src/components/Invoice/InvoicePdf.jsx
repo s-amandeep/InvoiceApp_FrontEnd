@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import html2pdf from "html2pdf.js";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 

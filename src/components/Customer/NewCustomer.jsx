@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
-import GetAllCustomers from './GetAllCustomers';
 
 const NewCustomer = () => {
   // State for form fields

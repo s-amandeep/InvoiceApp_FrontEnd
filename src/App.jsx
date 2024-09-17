@@ -1,65 +1,59 @@
-import React, { useState } from "react";
-import Header from "./components/Header";
-// import ShowForm from "./components/Invoice/ShowForm";
-import NewProduct from "./components/Product/NewProduct";
-import NewCustomer from "./components/Customer/NewCustomer";
-import Invoice from "./components/InvoiceNew/Invoice";
-import InvoiceList from "./components/InvoiceNew/InvoiceList";
+import React from "react";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import Login from "./components/SignupLogin/Login";
+import Signup from "./components/SignupLogin/Signup";
+import HomePage from "./components/SignupLogin/HomePage";
+import AdminPage from "./components/SignupLogin/AdminPage";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import "./index.css";
 
-function App() {
-  const [selected, setSelected] = useState(null);
+const PrivateRoute = ({ children }) => {
+  const { currentUser } = useAuth();
 
-  // return (
-  //   <div className='App'>
-  //     <Header />
-  //     <main className='core-concepts'>
-  //       <ShowForm props={"Invoice"}>Invoice</ShowForm>
-  //       <br />
-  //       <ShowForm props={"InvoiceList"}>Invoice List</ShowForm>
-  //       <br />
-  //       <ShowForm props={"Product"}>Products</ShowForm>
-  //       <br />
-  //       <ShowForm props={"Customer"}>Customers</ShowForm>
-  //     </main>
-  //   </div>
-  // );
-  const renderContent = () => {
-    switch (selected) {
-      case "invoices":
-        return <Invoice />;
-      case "invoiceList":
-        return <InvoiceList />;
-      case "products":
-        return <NewProduct />;
-      case "customers":
-        return <NewCustomer />;
-      default:
-        return null;
-    }
-  };
+  return currentUser ? children : <Login />;
+};
+
+const App = () => {
+  // const { currentUser, role } = useAuth();
 
   return (
-    <div className='App'>
-      <Header />
-      <div className="navbar">
-        <button className="home-button" onClick={() => setSelected(null)}>
-          Home
-        </button>
-      </div>
-      {selected === null ? (
-        <div className="menu">
-          <button onClick={() => setSelected("invoices")}>Invoice</button>
-          <button onClick={() => setSelected("invoiceList")}>Invoice List</button>
-          <button onClick={() => setSelected("products")}>Products</button>
-          <button onClick={() => setSelected("customers")}>Customers</button>
-        </div>
-      ) : (
-        <div className="content">{renderContent()}</div>
-      )}
-    </div>
+    <Router>
+      <AuthProvider>
+      <Routes>
+      <Route path="/login" element={<Login />} />
+          <Route
+            path="/admin"
+            element={
+              <PrivateRoute>
+                <AdminPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/products"
+            element={
+              <PrivateRoute>
+                {/* <ProductsPage /> */}
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invoices"
+            element={
+              <PrivateRoute>
+                {/* <InvoicesPage /> */}
+              </PrivateRoute>
+            }
+          />
+        {/* <Route path="/login" element={currentUser ? <Navigate to="/home" /> : <Login />} /> */}
+        <Route path="/signup" element={<Signup />} />
+        {/* <Route path="/home" element={currentUser ? <HomePage /> : <Navigate to="/login" />} /> */}
+        {/* <Route path="/admin" element={currentUser && role === 'admin' ? <AdminPage /> : <Navigate to="/login" />} /> */}
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+      </AuthProvider>
+    </Router>
   );
 }
-
-// }
 
 export default App;

@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Invoice.css";
 import ProductModal from "./ProductModal";
-import generatePDF from "react-to-pdf";
-// import InvoiceComponent from "./InvoiceComponent";
 import InvoicePdf from "./InvoicePdf";
 ("./ProductModal");
 
@@ -24,10 +22,6 @@ const Invoice = () => {
     // Fetch customers from backend
     fetchCustomers();
   }, []);
-
-  //   useEffect(() => {
-  //     console.log("Invoice state updated:", invoice);
-  //   }, [invoice]);
 
   const fetchCustomers = () => {
     axios
