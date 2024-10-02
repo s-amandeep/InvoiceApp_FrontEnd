@@ -4,6 +4,7 @@ import NewCustomer from "../Customer/NewCustomer";
 import Invoice from "../Invoice/Invoice";
 import InvoiceList from "../Invoice/InvoiceList";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 import "./HomePage.css";
 
 function HomePage() {

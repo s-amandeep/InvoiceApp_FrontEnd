@@ -20,6 +20,7 @@ const Signup = () => {
                 password,
                 role
             });
+            console.log(role);
             console.log(response.data);
             if (response.data.success) {
                 navigate('/login');

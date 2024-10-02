@@ -16,10 +16,10 @@ function Login() {
 
     try {
       const data = await login(mobile, password);
-      if (data.role === 'admin') {
+      if (data === 'ROLE_ADMIN') {
         navigate('/admin');
       } else {
-        navigate('/admin');
+        navigate('/home');
       }
     } catch (err) {
       setError(err.message);

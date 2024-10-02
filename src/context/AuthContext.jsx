@@ -34,14 +34,17 @@ export function AuthProvider({ children }) {
   const login = async (mobile, password) => {
     try {
       const response = await axios.post('http://localhost:8080/api/auth/login', { mobile, password });
-      const { user, role } = response.data;
-      console.log(response.data)
+    //   const { user, role } = response.data;
+      const user = response.data.response.name;
+      const role = response.data.response.role;
+      console.log(user, role);
       setCurrentUser(user);
       setRole(role);
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('role', role);
-      return response.data;
+      return role;
     } catch (error) {
+      console.log(error);
       throw new Error(error.response.data.message || 'Login failed');
     }
   };
@@ -57,14 +60,14 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     setCurrentUser(null);
-    setRole(null);
+    // setRole(null);
     localStorage.removeItem('user');
-    localStorage.removeItem('role');
+    // localStorage.removeItem('role');
   };
 
   const value = {
     currentUser,
-    role,
+    // role,
     login,
     signup,
     logout,
