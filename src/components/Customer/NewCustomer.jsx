@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
+// import { useAuth } from '../../context/AuthContext';
+import axiosInstance from '../../utils/auth-interceptor';
 
 const NewCustomer = () => {
+
+  // const { token } = useAuth();
+
   // State for form fields
   const [customers, setCustomers] = useState([]);  
   const [newCustomer, setNewCustomer] = useState({
@@ -18,8 +23,9 @@ const NewCustomer = () => {
   const [success, setSuccess] = useState('');
 
   const fetchCustomers = () => {
-    axios
-      .get("http://localhost:8080/api/customers")
+    axiosInstance
+    // .get("http://localhost:8080/api/user/customers")
+      .get("/user/customers")
       .then((response) => {
         setCustomers(response.data);
         // console.log(response.data);
@@ -37,7 +43,7 @@ const NewCustomer = () => {
     // setSuccess('');  
 
     try {
-        axios.post("http://localhost:8080/api/customers", newCustomer);        
+        axios.post("http://localhost:8080/api/user/customers", newCustomer);        
         setNewCustomer({
           name: "",
           address: "",

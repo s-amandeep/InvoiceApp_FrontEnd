@@ -1,6 +1,7 @@
 // src/context/AuthContext.js
-import React, { useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useContext, useState, useEffect } from "react";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = React.createContext();
 
@@ -9,64 +10,47 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [role, setRole] = useState(null);
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("jwtToken"));
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedRole = localStorage.getItem('role');
-
-    // Safely parse user only if it exists and is not 'undefined'
-    if (storedUser && storedUser !== 'undefined') {
-        try {
-          setCurrentUser(JSON.parse(storedUser));
-        } catch (error) {
-          console.error('Error parsing user data:', error);
-          setCurrentUser(null);
-        }
-      }
-  
-      if (storedRole && storedRole !== 'undefined') {
-        setRole(storedRole);
-      }
-    }, []);
-
-  const login = async (mobile, password) => {
-    try {
-      const response = await axios.post('http://localhost:8080/api/auth/login', { mobile, password });
-    //   const { user, role } = response.data;
-      const user = response.data.response.name;
-      const role = response.data.response.role;
-      console.log(user, role);
-      setCurrentUser(user);
-      setRole(role);
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('role', role);
-      return role;
-    } catch (error) {
-      console.log(error);
-      throw new Error(error.response.data.message || 'Login failed');
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      setUser({
+        name: decodedToken.name,
+        mobile: decodedToken.sub,
+        role: decodedToken.roles[0], // Assuming roles is an array
+      });
     }
-  };
+  }, [token]);
+
+  const login = (jwtToken) => {
+    localStorage.setItem('jwtToken', jwtToken);
+    console.log(jwtToken);
+    setToken(jwtToken);
+};
+
+const logout = () => {
+    localStorage.removeItem('jwtToken');
+    setUser(null);
+    setToken(null);
+};
 
   const signup = async (name, mobile, password, role) => {
     try {
-      const response = await axios.post('http://localhost:8080/api/auth/signup', { name, mobile, password, role });
+      const response = await axios.post(
+        "http://localhost:8080/api/auth/signup",
+        { name, mobile, password, role }
+      );
       return response.data;
     } catch (error) {
-      throw new Error(error.response.data.message || 'Signup failed');
+      throw new Error(error.response.data.message || "Signup failed");
     }
   };
 
-  const logout = () => {
-    setCurrentUser(null);
-    // setRole(null);
-    localStorage.removeItem('user');
-    // localStorage.removeItem('role');
-  };
-
   const value = {
-    currentUser,
+    user,
+    token,
     // role,
     login,
     signup,

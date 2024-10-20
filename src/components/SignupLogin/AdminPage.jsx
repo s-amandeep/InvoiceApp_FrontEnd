@@ -2,9 +2,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import "./Styles.css";
 
 const AdminPage = () => {
-  const { currentUser, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -12,11 +13,13 @@ const AdminPage = () => {
     navigate('/login');
   };
 
+  // const styles = Styles;
+
   return (
     <div style={styles.container}>
       <header style={styles.header}>
         <h1>Admin Dashboard</h1>
-        <p>Welcome, {currentUser?.name || 'Admin'}!</p>
+        <p>Welcome, {user?.name || 'Admin'}!</p>
         <button style={styles.logoutButton} onClick={handleLogout}>
           Logout
         </button>
@@ -41,9 +44,9 @@ const AdminPage = () => {
         </div>
 
         <div style={styles.card}>
-          <h2>Manage Users</h2>
-          <button style={styles.button} onClick={() => navigate('/users')}>
-            View Users
+          <h2>Manage Customers</h2>
+          <button style={styles.button} onClick={() => navigate('/customers')}>
+            View Customers
           </button>
         </div>
       </div>
