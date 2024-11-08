@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from "axios";
+// import axios from "axios";
 // import { useAuth } from '../../context/AuthContext';
 import axiosInstance from '../../utils/auth-interceptor';
 
@@ -43,11 +43,13 @@ const NewCustomer = () => {
     // setSuccess('');  
 
     try {
-        axios.post("http://localhost:8080/api/user/customers", newCustomer);        
+        // axios.post("http://localhost:8080/api/user/customers", newCustomer);
+        axiosInstance.post("/user/customers", newCustomer);        
         setNewCustomer({
           name: "",
           address: "",
           mobile: "",
+          gstin: "",
         });          
 
       setSuccess('Customer added successfully!');
@@ -117,6 +119,19 @@ const NewCustomer = () => {
             />
           </label>
         </div>
+        <div>
+          <label>
+            GSTIN:
+            <input
+              type="text"
+              name="gstin"
+              value={newCustomer.gstin}
+              onChange={handleChange}
+              placeholder="GSTIN"  
+              required
+            />
+          </label>
+        </div>
         <button type="submit">Add Customer</button>
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -130,6 +145,7 @@ const NewCustomer = () => {
             <th>Customer Name</th>            
             <th>Address</th>
             <th>Phone Number</th>
+            <th>GSTIN</th>
             {/* <th>Actions</th>  */}
           </tr>
         </thead>
@@ -140,6 +156,7 @@ const NewCustomer = () => {
               <td>{customer.name}</td>
               <td>{customer.address}</td>                       
               <td>{customer.mobile}</td>
+              <td>{customer.gstin}</td>  
               {/* <td>
                 <button
                   className="delete-button"

@@ -33,10 +33,10 @@ function Login() {
 
       const userRole = jwtDecode(jwtToken).roles[0]; // Assuming roles is an array ------- CHECK HERE, IT MIGHT NOT BE ARRAY
       console.log(userRole);
-      if (userRole === "ROLE_ADMIN") {
-        navigate("/admin");
-      } else if (userRole === "ROLE_USER") {
-        navigate("/home");
+      if (userRole === "ROLE_ADMIN" || userRole === "ROLE_USER") {
+        navigate("/home");      
+      // } else if (userRole === "ROLE_USER") {
+      //   navigate("/home");
       } else {
         setError("Invalid role");
       }

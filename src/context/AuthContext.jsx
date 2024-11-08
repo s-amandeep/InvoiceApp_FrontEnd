@@ -24,9 +24,9 @@ export function AuthProvider({ children }) {
     }
   }, [token]);
 
-  const login = (jwtToken) => {
+  const login = (jwtToken) => {    
     localStorage.setItem('jwtToken', jwtToken);
-    console.log(jwtToken);
+    console.log(localStorage.getItem('jwtToken'));
     setToken(jwtToken);
 };
 

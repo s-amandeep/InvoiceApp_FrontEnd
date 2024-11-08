@@ -66,6 +66,80 @@ const InvoicePdf = ({ invoice, reset, resetMessage }) => {
     reset();
   };
 
+  const getTaxDisplay = (tax, cess) => {
+    if (cess === 0) {
+      return "CGST + SGST " + tax + "%";
+    } else {
+      return "CGST + SGST " + tax + "%" + " + Cess " + cess + "%";
+    }
+  };
+
+  const getTaxableValue = (amount, tax, cess) => {
+    if (cess === 0) {
+      return (amount/(1+tax/100)).toFixed(2);
+    } else {
+      return (amount/(1+ (tax+cess)/100)).toFixed(2);
+    }
+  }
+
+  const numberToWords = (num) => {
+    const belowTwenty = [
+      "Zero",
+      "One",
+      "Two",
+      "Three",
+      "Four",
+      "Five",
+      "Six",
+      "Seven",
+      "Eight",
+      "Nine",
+      "Ten",
+      "Eleven",
+      "Twelve",
+      "Thirteen",
+      "Fourteen",
+      "Fifteen",
+      "Sixteen",
+      "Seventeen",
+      "Eighteen",
+      "Nineteen",
+    ];
+    const tens = [
+      "",
+      "",
+      "Twenty",
+      "Thirty",
+      "Forty",
+      "Fifty",
+      "Sixty",
+      "Seventy",
+      "Eighty",
+      "Ninety",
+    ];
+
+    if (num < 20) return belowTwenty[num];
+    if (num < 100)
+      return (
+        tens[Math.floor(num / 10)] +
+        (num % 10 ? " " + belowTwenty[num % 10] : "")
+      );
+    if (num < 1000)
+      return (
+        belowTwenty[Math.floor(num / 100)] +
+        " Hundred" +
+        (num % 100 ? " " + numberToWords(num % 100) : "")
+      );
+    if (num < 1000000)
+      return (
+        numberToWords(Math.floor(num / 1000)) +
+        " Thousand" +
+        (num % 1000 ? " " + numberToWords(num % 1000) : "")
+      );
+
+    return ""; // You can extend this for larger numbers if needed
+  };
+
   return (
     <div>
       {/* Invoice Content */}
@@ -74,6 +148,7 @@ const InvoicePdf = ({ invoice, reset, resetMessage }) => {
           <h1 style={styles.companyName}>Zionique Trading LLP</h1>
           <p style={styles.companyDetails}>Jora Phatak Road, Dhanbad</p>
           <p style={styles.companyDetails}>+91 9110078517</p>
+          <p style={styles.companyDetails}>GSTIN: 20AABFZ9147J1ZD</p>
         </div>
 
         <h2 style={styles.invoiceTitle}>Invoice</h2>
@@ -82,37 +157,78 @@ const InvoicePdf = ({ invoice, reset, resetMessage }) => {
           <p style={styles.invoiceDate}>
             <strong>Invoice Date:</strong> {invoice.invoiceDate}
           </p>
-          <p>
-            <strong>Customer Name:</strong> {invoice.customerName}
+          <p style={styles.invoiceDate}>
+            <strong>Invoice Number:</strong> {invoice.invoiceId}
           </p>
           <p>
+            Customer Details: <strong> {invoice.customerName}</strong>
+            {", "}
+            {invoice.customerAddress}
+            {" -- Mob: "}
+            {invoice.customerMobile}
+          </p>
+          {/* <p>
             <strong>Customer Address:</strong> {invoice.customerAddress}
           </p>
           <p>
             <strong>Customer Mobile:</strong> {invoice.customerMobile}
+          </p> */}
+          <p>
+            Customer GSTIN: <strong> {invoice.customerGstin} </strong>
           </p>
         </div>
 
         <table style={styles.table}>
           <thead>
             <tr>
-              <th style={styles.tableHeader}>Brand</th>
+              {/* <th style={styles.tableHeader}>Brand</th>
               <th style={styles.tableHeader}>MRP</th>
               <th style={styles.tableHeader}>Description</th>
               <th style={styles.tableHeader}>Quantity</th>
               <th style={styles.tableHeader}>Selling Price</th>
-              <th style={styles.tableHeader}>Total Price</th>
+              <th style={styles.tableHeader}>Total Price</th> */}
+
+              <th style={styles.tableHeader}>Description</th>
+              <th style={styles.tableHeader}>HSN Code</th>
+              <th style={styles.tableHeader}>Quantity</th>
+              <th style={styles.tableHeader}>Unit</th>              
+              <th style={styles.tableHeader}>Unit Price</th>
+              <th style={styles.tableHeader}>Tax</th>
+              <th style={styles.tableHeader}>Taxable Value</th>
+              <th style={styles.tableHeader}>Amount</th>
             </tr>
           </thead>
           <tbody>
             {invoice.itemDtoList.map((item, index) => (
               <tr key={index} style={styles.tableRow}>
-                <td style={styles.tableCell}>{item.brandName}</td>
+                {/* <td style={styles.tableCell}>{item.brandName}</td>
                 <td style={styles.tableCell}>₹{item.price}</td>
                 <td style={styles.tableCell}>{item.description}</td>
                 <td style={styles.tableCell}>{item.quantity}</td>
                 <td style={styles.tableCell}>₹{item.sellingPrice}</td>
-                <td style={styles.tableCell}>₹{item.totalPrice}</td>
+                <td style={styles.tableCell}>₹{item.totalPrice}</td> */}
+
+                <td style={styles.tableCell}>
+                  {item.brandName +
+                    " - " +
+                    item.description +
+                    " - MRP " +
+                    item.price +
+                    "/-"}
+                </td>
+                <td style={styles.tableCell}>{item.hsnCode}</td>
+                <td style={styles.tableCell}>{item.quantity}</td>
+                <td style={styles.tableCell}>{item.unitOfMeasurement}</td>                
+                <td style={styles.tableCell}>
+                  &#8377;{item.sellingPrice.toFixed(2)}
+                </td>
+                <td style={styles.tableCell}>
+                  {getTaxDisplay(item.taxRate, item.cessRate)}
+                </td>
+                <td style={styles.tableCell}>&#8377;{getTaxableValue(item.totalPrice.toFixed(2), item.taxRate, item.cessRate)}</td>
+                <td style={styles.tableCell}>
+                  &#8377;{item.totalPrice.toFixed(2)}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -120,6 +236,16 @@ const InvoicePdf = ({ invoice, reset, resetMessage }) => {
 
         <div style={styles.totalAmount}>
           <h3>Total Amount: ₹{invoice.totalValue}</h3>
+        </div>
+        <div style={styles.totalAmount}>
+          <h3>Total Tax: ₹{invoice.totalTax.toFixed(2)}</h3>
+        </div>
+
+        <div style={styles.totalAmount}>
+          <h3>
+            Amount in words: &#8377;{" "}
+            {numberToWords(Math.round(invoice.totalValue))} only
+          </h3>
         </div>
       </div>
 
@@ -149,7 +275,12 @@ const InvoicePdf = ({ invoice, reset, resetMessage }) => {
         <button onClick={sendWhatsAppMessage} style={styles.button}>
           Share Invoice via WhatsApp
         </button>
-        <button onClick={handleCreateNewInvoice} style={styles.newInvoiceButton}>{resetMessage}</button>            
+        <button
+          onClick={handleCreateNewInvoice}
+          style={styles.newInvoiceButton}
+        >
+          {resetMessage}
+        </button>
       </div>
     </div>
   );
@@ -189,6 +320,10 @@ const styles = {
     textAlign: "right",
     fontSize: "14px",
   },
+  invoiceNumber: {
+    textAlign: "left",
+    fontSize: "14px",
+  },
   customerDetails: {
     marginBottom: "20px",
     fontSize: "14px",
@@ -219,23 +354,23 @@ const styles = {
     fontWeight: "bold",
   },
   button: {
-    padding: '10px 20px',
-    margin: '5px',
-    fontSize: '16px',
-    cursor: 'pointer',
-    backgroundColor: '#4CAF50',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-},
-newInvoiceButton: {
-    padding: '10px 20px',
-    margin: '5px',
-    fontSize: '16px',
-    cursor: 'pointer',
-    backgroundColor: '#008CBA',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-},
+    padding: "10px 20px",
+    margin: "5px",
+    fontSize: "16px",
+    cursor: "pointer",
+    backgroundColor: "#4CAF50",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+  },
+  newInvoiceButton: {
+    padding: "10px 20px",
+    margin: "5px",
+    fontSize: "16px",
+    cursor: "pointer",
+    backgroundColor: "#008CBA",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+  },
 };

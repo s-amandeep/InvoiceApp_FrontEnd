@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import axiosInstance from "../../utils/auth-interceptor";
 import InvoicePdf from "./InvoicePdf";
+import { jwtDecode } from "jwt-decode";
 
 const InvoiceList = () => {
   const [invoicesList, setInvoicesList] = useState([]);
@@ -8,15 +10,20 @@ const InvoiceList = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [showInvoicesList, setShowInvoicesList] = useState(false);
+  const [userRole, setUserRole] = useState("ROLE_USER"); // Initialize state for user role 
 
   useEffect(() => {
     // Fetch invoices from backend
     fetchInvoices(currentPage);
+    const jwtToken = localStorage.getItem('jwtToken');
+    const role = jwtDecode(jwtToken).roles[0];
+    setUserRole(role);
+
   }, [currentPage]);
 
   const fetchInvoices = (page) => {
-    axios
-      .get(`http://localhost:8080/api/invoices?page=${page}&size=10`)
+    axiosInstance
+    .get(`/user/invoices?page=${page}&size=10`)
       .then((response) => {
         console.log(response.data);
         setInvoicesList(response.data.content);
@@ -27,9 +34,9 @@ const InvoiceList = () => {
   };
 
   const deleteInvoice = (invoiceId) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      axios
-        .delete(`http://localhost:8080/api/invoices/${invoiceId}`)
+    if (window.confirm("Are you sure you want to delete this invoice?")) {
+      axiosInstance
+        .delete(`/user/invoices/${invoiceId}`)
         .then(() => {
           fetchInvoices(currentPage); // Refresh the invoice list after deletion
         })
@@ -46,8 +53,8 @@ const InvoiceList = () => {
   };
 
   const fetchInvoiceById = (invoiceId) => {
-    axios
-      .get(`http://localhost:8080/api/invoices/${invoiceId}`)
+    axiosInstance
+      .get(`/user/invoices/${invoiceId}`)
       .then((response) => {
         console.log(response.data);
         setSelectedInvoice(response.data);
@@ -87,9 +94,9 @@ const InvoiceList = () => {
                     <button onClick={() => fetchInvoiceById(inv.invoiceId)}>
                       View
                     </button>
-                    <button onClick={() => deleteInvoice(inv.invoiceId)}>
+                    {userRole === 'ROLE_ADMIN' && <button onClick={() => deleteInvoice(inv.invoiceId)}>
                       Delete
-                    </button>
+                    </button>}
                   </td>
                 </tr>
               ))}

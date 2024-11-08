@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NewProduct from "../Product/NewProduct";
 import NewCustomer from "../Customer/NewCustomer";
 import Invoice from "../Invoice/Invoice";
@@ -7,11 +7,15 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
 import "./HomePage.css";
 import "./Styles.css";
+import { jwtDecode } from "jwt-decode";
 
 function HomePage() {
   const { logout, user} = useAuth();
   const navigate = useNavigate();
-  const [selected, setSelected] = useState(null);
+  const [title, setTitle] = useState("Welcome Guest");
+  const [productTitle, setProductTitle] = useState("View Products");
+  const [userRole, setUserRole] = useState("ROLE_USER"); // Initialize state for user role
+  // const [selected, setSelected] = useState(null);
 
   // Handle logout action
   const handleLogout = () => {
@@ -23,41 +27,62 @@ function HomePage() {
     return <div>Please log in to view this page.</div>;
   }
 
+  useEffect(() => {
+    // Retrieve user role from localStorage
+    const jwtToken = localStorage.getItem('jwtToken');
+    const role = jwtDecode(jwtToken).roles[0];
+    setUserRole(role);
+
+    // Set the title based on the user role
+  if (role === 'ROLE_ADMIN') {
+    setTitle('Admin Dashboard');
+    setProductTitle("Add or View Products");
+  } else if (role === 'ROLE_USER') {
+    setTitle('User Dashboard');
+  }
+    // } else {
+    //   setTitle('Welcome Guest'); // Default case
+    // }
+  }, []);
+
   return (
-    <div className="home-page">
+    <div className="home-page" style={styles.container}>
       <header style={styles.header}>
-        <h1>User Dashboard</h1>
+        <h1>{title}</h1>
         <p>Welcome, {user ? user.name : "User"}!</p>
-        <button className="home-button" onClick={() => setSelected(null)}>
+        {/* <button className="home-button" onClick={() => setSelected(null)}>
           Home
-        </button>
+        </button> */}
         <button style={styles.logoutButton} onClick={handleLogout}>
           Logout
-        </button>
+        </button> 
       </header>
 
       <div style={styles.content}>
         <div style={styles.card}>
           <h2>Manage Products</h2>
-          <button style={styles.button} onClick={() => navigate('/products')}>
-            View Products
+          <button style={styles.button} onClick={() => navigate('/user/products')}>
+            {productTitle}
           </button>
-          <button style={styles.button} onClick={() => navigate('/add-product')}>
+          {/* {userRole === 'ROLE_ADMIN' && <button style={styles.button} onClick={() => navigate('/add-product')}>
             Add Product
-          </button>
+          </button>} */}
         </div>
 
         <div style={styles.card}>
           <h2>Manage Invoices</h2>
-          <button style={styles.button} onClick={() => navigate('/invoices')}>
+          <button style={styles.button} onClick={() => navigate('/user/invoices')}>
             View Invoices
+          </button>
+          <button style={styles.button} onClick={() => navigate('/user/add-invoice')}>
+            Add Invoice
           </button>
         </div>
 
         <div style={styles.card}>
           <h2>Manage Customers</h2>
-          <button style={styles.button} onClick={() => navigate('/customers')}>
-            View Customers
+          <button style={styles.button} onClick={() => navigate('/user/customers')}>
+            Add or View Customers
           </button>
         </div>
       </div>
@@ -121,7 +146,5 @@ const styles = {
     marginTop: '10px',
   },
 };
-
-// }
 
 export default HomePage;

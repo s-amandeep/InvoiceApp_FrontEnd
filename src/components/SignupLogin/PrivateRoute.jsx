@@ -10,6 +10,8 @@ const PrivateRoute = ({ children, roles }) => {
     return <Navigate to="/login" />;
   }
 
+  console.log("PRivate Route -> " + user.role);
+
   if (roles && roles.indexOf(user.role) === -1) {
     return <Navigate to="/unauthorized" />;
   }

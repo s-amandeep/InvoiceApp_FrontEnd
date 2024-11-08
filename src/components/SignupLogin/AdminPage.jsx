@@ -28,10 +28,10 @@ const AdminPage = () => {
       <div style={styles.content}>
         <div style={styles.card}>
           <h2>Manage Products</h2>
-          <button style={styles.button} onClick={() => navigate('/products')}>
+          <button style={styles.button} onClick={() => navigate('/user/products')}>
             View Products
           </button>
-          <button style={styles.button} onClick={() => navigate('/add-product')}>
+          <button style={styles.button} onClick={() => navigate('/admin/add-product')}>
             Add Product
           </button>
         </div>

@@ -12,6 +12,8 @@ import AdminPage from "./components/SignupLogin/AdminPage";
 import Unauthorized from "./components/SignupLogin/Unauthorized";
 import NewProduct from "./components/Product/NewProduct";
 import NewCustomer from "./components/Customer/NewCustomer";
+import Invoice from "./components/Invoice/Invoice";
+import InvoiceList from "./components/Invoice/InvoiceList";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import PrivateRoute from "./components/SignupLogin/PrivateRoute";
 // import setupAxiosInterceptors from "./utils/auth-interceptor";
@@ -32,21 +34,24 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
-          <Route path="/products" element={<NewProduct />} />
-          <Route path="/customers" element={<NewCustomer />} />
+          <Route path="/user/products" element={<NewProduct />} />
+          <Route path="/user/customers" element={<NewCustomer />} />
+          <Route path="/user/invoices" element={<InvoiceList />} />
+          <Route path="/user/add-invoice" element={<Invoice />} />
+          <Route path="/admin/add-product" element={<NewProduct />} />
           
-          <Route
+          {/* <Route
             path="/admin"
             element={
               <PrivateRoute roles={["ROLE_ADMIN"]}>
                 <AdminPage />
               </PrivateRoute>
             }
-          />
+          /> */}
           <Route
             path="/home"
             element={
-              <PrivateRoute roles={["ROLE_USER"]}>
+              <PrivateRoute roles={["ROLE_USER", "ROLE_ADMIN"]}>
                 <HomePage />
               </PrivateRoute>
             }
